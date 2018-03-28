@@ -18,8 +18,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="Moq.AutoMock.dll" target="lib\net40" />
-    <file src="Moq.AutoMock.pdb" target="lib\net40" />
-    <file src="Moq.AutoMock.XML" target="lib\net40" />
+    <file src="Moq.AutoMock.dll" target="lib\net45" />
+    <file src="Moq.AutoMock.pdb" target="lib\net45" />
+    <file src="Moq.AutoMock.XML" target="lib\net45" />
   </files>
 </package>
