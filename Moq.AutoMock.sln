@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moq.AutoMock", "Moq.AutoMock\Moq.AutoMock.csproj", "{EEEF1922-71E6-443B-A86B-14742AB8E9C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F30C4A7C-42F1-4A53-835B-C1481267D569}"
@@ -10,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F30C4A
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moq.AutoMock.Tests", "Moq.AutoMock.Tests\Moq.AutoMock.Tests.csproj", "{EE94D503-6880-44FF-B23A-B11D521BAB7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{938A223F-78DC-4F8D-92FD-C9584F429F94}"
+	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
+		License.md = License.md
+		Moq.AutoMock.nuspec = Moq.AutoMock.nuspec
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -104,7 +104,10 @@ namespace Moq.AutoMock.Tests
 
         private static Type MockVerificationException
         {
-            get { return typeof (Mock).GetTypeInfo().Assembly.GetType("Moq.MockVerificationException"); }
+            get
+            {
+                return typeof (Mock).GetTypeInfo().Assembly.GetType("Moq.MockVerificationException");
+            }
         }
 
         public class DescribeCreateInstance

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Moq.AutoMock</id>
-    <version>0.4.0.0</version>
+    <version>0.4.1.0</version>
     <authors>Tim Kellogg</authors>
     <owners>Tim Kellogg</owners>
     <licenseUrl>https://github.com/tkellogg/Moq.AutoMocker/blob/master/License.md</licenseUrl>
@@ -20,5 +20,6 @@
   <files>
     <file src="Moq.AutoMock.dll" target="lib\net40" />
     <file src="Moq.AutoMock.pdb" target="lib\net40" />
+    <file src="Moq.AutoMock.XML" target="lib\net40" />
   </files>
 </package>
