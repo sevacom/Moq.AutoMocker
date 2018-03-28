@@ -31,7 +31,7 @@ namespace Moq.AutoMock
         /// mocks.
         /// </summary>
         /// <typeparam name="T">A concrete type</typeparam>
-        /// <returns>An instance of T with all constructor arguments derrived from services 
+        /// <returns>An instance of T with all constructor arguments derived from services
         /// setup in the container.</returns>
         public T CreateInstance<T>()
             where T : class
@@ -47,7 +47,7 @@ namespace Moq.AutoMock
         /// <typeparam name="T">A concrete type</typeparam>
         /// <param name="enablePrivate">When true, private constructors will also be used to
         /// create mocks.</param>
-        /// <returns>An instance of T with all constructor arguments derrived from services 
+        /// <returns>An instance of T with all constructor arguments derrived from services
         /// setup in the container.</returns>
         public T CreateInstance<T>(bool enablePrivate) where T : class
         {
@@ -161,7 +161,7 @@ namespace Moq.AutoMock
         /// </summary>
         /// <typeparam name="TService">The type that the instance will be registered as</typeparam>
         /// <param name="setup">A shortcut for Mock.Of's syntax</param>
-        public void Use<TService>(Expression<Func<TService, bool>> setup) 
+        public void Use<TService>(Expression<Func<TService, bool>> setup)
             where TService : class
         {
             Use(Mock.Get(Mock.Of(setup)));
@@ -292,7 +292,7 @@ namespace Moq.AutoMock
 
         /// <summary>
         /// Combines all given types so that they are mocked by the same
-        /// mock. Some IoC containers call this "Forwarding" one type to 
+        /// mock. Some IoC containers call this "Forwarding" one type to
         /// other interfaces. In the end, this just means that all given
         /// types will be implemnted by the same instance.
         /// </summary>
@@ -353,7 +353,7 @@ namespace Moq.AutoMock
             where TResult : struct
         {
             var mock = GetMock<T>();
-            
+
             mock.Verify(expression, times);
         }
 
