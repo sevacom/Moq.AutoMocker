@@ -230,6 +230,18 @@ namespace Moq.AutoMock.Tests
                 Assert.IsNotNull(instance.GetSetPropertyWithValue);
                 Assert.AreNotEqual(previosPropertyValue, instance.GetSetPropertyWithValue);
             }
+
+            [Test]
+            public void It_creates_object_with_properties()
+            {
+                ServiceWithProperties instance = mocker.CreateInstanceWithProperties<ServiceWithProperties>();
+
+                Assert.IsNotNull(instance.GetSetProperty);
+                Assert.IsNotNull(instance.GetSetClassProperty);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute1);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute2);
+                Assert.IsNotNull(instance.GetSetPropertyWithValue);
+            }
         }
 
         [TestFixture]

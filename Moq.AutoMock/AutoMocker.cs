@@ -41,6 +41,23 @@ namespace Moq.AutoMock
         }
 
         /// <summary>
+        /// Constructs an instance from known services. Any dependancies (constructor arguments and public properties with setters and null value)
+        /// are fulfilled by searching the container or, if not found, automatically generating
+        /// mocks.
+        /// </summary>
+        /// <typeparam name="T">A concrete type</typeparam>
+        /// <param name="propertyAttributeType">when not null, properties with propertyAttributeType will be used
+        /// <returns>An instance of T with all constructor arguments derived from services
+        /// setup in the container.</returns>
+        public T CreateInstanceWithProperties<T>(Type propertyAttributeType = null)
+            where T : class
+        {
+            var instance = CreateInstance<T>(false);
+            MockProperties(instance, false, propertyAttributeType);
+            return instance;
+        }
+
+        /// <summary>
         /// Constructs an instance from known services. Any dependancies (constructor arguments)
         /// are fulfilled by searching the container or, if not found, automatically generating
         /// mocks.
