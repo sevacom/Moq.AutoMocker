@@ -148,8 +148,23 @@ namespace Moq.AutoMock
         /// <returns>An instance with virtual and abstract members mocked</returns>
         public T CreateSelfMock<T>(bool enablePrivate) where T : class
         {
+            return CreateSelfMockAsMock<T>(enablePrivate).Object;
+        }
+
+        /// <summary>
+        /// Constructs a self-mock from the services available in the container. A self-mock is
+        /// a concrete object that has virtual and abstract members mocked. The purpose is so that
+        /// you can test the majority of a class but mock out a resource. This is great for testing
+        /// abstract classes, or avoiding breaking cohesion even further with a non-abstract class.
+        /// </summary>
+        /// <typeparam name="T">The instance that you want to build</typeparam>
+        /// <param name="enablePrivate">When true, private constructors will also be used to
+        /// create mocks.</param>
+        /// <returns>Mock instance with virtual and abstract members mocked</returns>
+        public Mock<T> CreateSelfMockAsMock<T>(bool enablePrivate) where T : class
+        {
             var arguments = CreateArguments<T>(GetBindingFlags(enablePrivate));
-            return new Mock<T>(mockBehavior, arguments).Object;
+            return new Mock<T>(mockBehavior, arguments);
         }
 
         private object GetObjectFor(Type type)
