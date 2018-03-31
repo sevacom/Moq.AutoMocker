@@ -14,6 +14,7 @@ namespace Moq.AutoMock
     {
         private readonly Dictionary<Type, IInstance> typeMap = new Dictionary<Type, IInstance>();
         private readonly ConstructorSelector constructorSelector = new ConstructorSelector();
+        private readonly PropertiesSelector propertiesSelector = new PropertiesSelector();
         private readonly MockBehavior mockBehavior;
 
         public AutoMocker(MockBehavior mockBehavior)
@@ -60,6 +61,34 @@ namespace Moq.AutoMock
             catch (TargetInvocationException e)
             {
                 throw e.InnerException.PreserveStackTrace();
+            }
+        }
+
+        /// <summary>
+        /// Set instance properties with mocks, by default set only properties with null values
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="alsoMockNotNullProperties">false - mock only properties with null value, true - mock propreties with any value</param>
+        /// <param name="attributeType">attribute type to find properties</param>
+        public void MockProperties<T>(T instance, bool alsoMockNotNullProperties = false, Type attributeType = null)
+            where T : class
+        {
+            var bindingFlags = GetBindingFlags(false);
+            var injectableProperties = propertiesSelector
+                .GetInjectableProperties(typeof(T), bindingFlags, true, attributeType);
+
+            foreach (var injectProperty in injectableProperties)
+            {
+                if (!alsoMockNotNullProperties)
+                {
+                    var propertyValue = injectProperty.GetValue(instance);
+                    if (propertyValue != null)
+                        continue;
+                }
+
+                var mockedPropertyValue = GetObjectFor(injectProperty.PropertyType);
+                injectProperty.SetValue(instance, mockedPropertyValue);
             }
         }
 

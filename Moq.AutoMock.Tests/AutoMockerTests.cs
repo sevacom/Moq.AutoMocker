@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Moq.AutoMock.Tests
@@ -199,6 +198,37 @@ namespace Moq.AutoMock.Tests
                 ArgumentException exception = Assert.Throws<ArgumentException>(() => mocker.CreateInstance<ConstructorThrows>());
                 var contains = exception.StackTrace.Contains(typeof(ConstructorThrows).Name);
                 Assert.IsTrue(contains);
+            }
+
+            [Test]
+            public void It_creates_object_and_mock_properties_with_null_value()
+            {
+                ServiceWithProperties instance = mocker.CreateInstance<ServiceWithProperties>();
+                var previosPropertyValue = instance.GetSetPropertyWithValue;
+
+                mocker.MockProperties(instance);
+
+                Assert.IsNotNull(instance.GetSetProperty);
+                Assert.IsNotNull(instance.GetSetClassProperty);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute1);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute2);
+                Assert.AreEqual(previosPropertyValue, instance.GetSetPropertyWithValue);
+            }
+
+            [Test]
+            public void It_creates_object_and_mock_properties_with_any_value()
+            {
+                ServiceWithProperties instance = mocker.CreateInstance<ServiceWithProperties>();
+                var previosPropertyValue = instance.GetSetPropertyWithValue;
+
+                mocker.MockProperties(instance, true);
+
+                Assert.IsNotNull(instance.GetSetProperty);
+                Assert.IsNotNull(instance.GetSetClassProperty);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute1);
+                Assert.IsNotNull(instance.GetSetPropertyWithoutAttribute2);
+                Assert.IsNotNull(instance.GetSetPropertyWithValue);
+                Assert.AreNotEqual(previosPropertyValue, instance.GetSetPropertyWithValue);
             }
         }
 
@@ -499,7 +529,6 @@ namespace Moq.AutoMock.Tests
         }
 
         [TestFixture]
-
         public class DescribeCreatingSelfMocks
         {
             private readonly AutoMocker mocker = new AutoMocker();

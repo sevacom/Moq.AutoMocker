@@ -62,6 +62,7 @@
     <Compile Include="ConstructorSelector.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Instance.cs" />
+    <Compile Include="PropertiesSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
