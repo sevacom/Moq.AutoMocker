@@ -1,10 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Moq.AutoMock.Tests
 {
@@ -22,6 +19,12 @@ namespace Moq.AutoMock.Tests
                  false,
                  typeof(ImportPropertyAttribute));
 
+            properties = PropertiesSelectorBuilder<ServiceWithProperties>
+                .Create()
+                .WithAttribute<ImportPropertyAttribute>()
+                .GetProperties()
+                .ToArray();
+
             Assert.AreEqual(
                 ServiceWithProperties.PublicPropertiesWithImportAttributeAndRefereceTypeCount,
                 properties.Count());
@@ -35,6 +38,11 @@ namespace Moq.AutoMock.Tests
                  BindingFlags.Instance | BindingFlags.Public,
                  false);
 
+            properties = PropertiesSelectorBuilder<ServiceWithProperties>
+                .Create()
+                .GetProperties()
+                .ToArray();
+
             Assert.AreEqual(ServiceWithProperties.PublicRefereceTypePropertiesCount,
                 properties.Count());
         }
@@ -46,6 +54,12 @@ namespace Moq.AutoMock.Tests
                 typeof(ServiceWithProperties),
                  BindingFlags.Instance | BindingFlags.Public,
                  true);
+
+            properties = PropertiesSelectorBuilder<ServiceWithProperties>
+                .Create()
+                .WithSetters()
+                .GetProperties()
+                .ToArray();
 
             Assert.AreEqual(ServiceWithProperties.PublicRefereceTypePropertiesWithSetterCount,
                 properties.Count());

@@ -46,16 +46,16 @@ namespace Moq.AutoMock
         /// mocks.
         /// </summary>
         /// <typeparam name="T">A concrete type</typeparam>
-        /// <param name="propertyAttributeType">when not null, properties with propertyAttributeType will be used
         /// <returns>An instance of T with all constructor arguments derived from services
         /// setup in the container.</returns>
-        public T CreateInstanceWithProperties<T>(Type propertyAttributeType = null)
+        public T CreateInstanceWithMockProperties<T>()
             where T : class
         {
             var instance = CreateInstance<T>(false);
-            MockProperties(instance, false, propertyAttributeType);
+            MockProperties(instance);
             return instance;
         }
+
 
         /// <summary>
         /// Constructs an instance from known services. Any dependancies (constructor arguments)
@@ -82,28 +82,48 @@ namespace Moq.AutoMock
         }
 
         /// <summary>
-        /// Set instance properties with mocks, by default set only properties with null values
+        /// Set instance properties with mocks
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="instance"></param>
-        /// <param name="alsoMockNotNullProperties">false - mock only properties with null value, true - mock propreties with any value</param>
-        /// <param name="attributeType">attribute type to find properties</param>
-        public void MockProperties<T>(T instance, bool alsoMockNotNullProperties = false, Type attributeType = null)
+        public void MockProperties<T>(T instance)
             where T : class
         {
-            var bindingFlags = GetBindingFlags(false);
-            var injectableProperties = propertiesSelector
-                .GetInjectableProperties(typeof(T), bindingFlags, true, attributeType);
+            var properties = PropertiesSelectorBuilder<T>
+                .CreateDefault()
+                .GetProperties(instance);
+            MockProperties(instance, properties);
+        }
 
-            foreach (var injectProperty in injectableProperties)
+        /// <summary>
+        /// Set instance properties with mocks
+        /// </summary>
+        public void MockProperties<T, TPropertyAttribute>(T instance)
+            where T : class
+            where TPropertyAttribute : Attribute
+        {
+            var properties = PropertiesSelectorBuilder<T>
+                .CreateDefaultWithAttribute<TPropertyAttribute>()
+                .GetProperties(instance);
+            MockProperties(instance, properties);
+        }
+
+        /// <summary>
+        /// Set instance properties with mocks
+        /// </summary>
+        public void MockProperties<T>(T instance, PropertiesSelectorBuilder<T> propertiesBuilder)
+            where T : class
+        {
+            var properties = propertiesBuilder.GetProperties(instance);
+            MockProperties(instance, properties);
+        }
+
+        /// <summary>
+        /// Set instance properties with mocks
+        /// </summary>
+        public void MockProperties<T>(T instance, IEnumerable<PropertyInfo> properties)
+            where T : class
+        {
+            foreach (var injectProperty in properties)
             {
-                if (!alsoMockNotNullProperties)
-                {
-                    var propertyValue = injectProperty.GetValue(instance);
-                    if (propertyValue != null)
-                        continue;
-                }
-
                 var mockedPropertyValue = GetObjectFor(injectProperty.PropertyType);
                 injectProperty.SetValue(instance, mockedPropertyValue);
             }

@@ -221,7 +221,8 @@ namespace Moq.AutoMock.Tests
                 ServiceWithProperties instance = mocker.CreateInstance<ServiceWithProperties>();
                 var previosPropertyValue = instance.GetSetPropertyWithValue;
 
-                mocker.MockProperties(instance, true);
+                mocker.MockProperties(instance, 
+                    PropertiesSelectorBuilder<ServiceWithProperties>.Create().WithSetters());
 
                 Assert.IsNotNull(instance.GetSetProperty);
                 Assert.IsNotNull(instance.GetSetClassProperty);
@@ -234,7 +235,7 @@ namespace Moq.AutoMock.Tests
             [Test]
             public void It_creates_object_with_properties()
             {
-                ServiceWithProperties instance = mocker.CreateInstanceWithProperties<ServiceWithProperties>();
+                ServiceWithProperties instance = mocker.CreateInstanceWithMockProperties<ServiceWithProperties>();
 
                 Assert.IsNotNull(instance.GetSetProperty);
                 Assert.IsNotNull(instance.GetSetClassProperty);
