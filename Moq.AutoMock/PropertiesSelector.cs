@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Moq.AutoMock
@@ -14,6 +15,7 @@ namespace Moq.AutoMock
         private static Func<PropertyInfo, T, bool> _withSettersFunc = (p, instance) => p.CanWrite;
         private List<Func<PropertyInfo, T, bool>> _checkFunctors = new List<Func<PropertyInfo, T, bool>>();
         private bool _isCheckWithValue = false;
+        private List<string> _propertyNames;
 
         private PropertiesSelector()
         {
@@ -37,8 +39,21 @@ namespace Moq.AutoMock
 
         public PropertiesSelector<T> WithPropertyNames(params string[] propertyNames)
         {
-            _checkFunctors.Add((p, instance) => propertyNames.Contains(p.Name));
+            if(_propertyNames == null)
+            {
+                _propertyNames = new List<string>();
+                _checkFunctors.Add((p, instance) => _propertyNames.Contains(p.Name));
+            }
+
+            _propertyNames.AddRange(propertyNames);
+
             return this;
+        }
+
+        public PropertiesSelector<T> WithPropertyName<TProperty>(
+            Expression<Func<T, TProperty>> propertyExpression)
+        {
+            return WithPropertyNames(GetPropertyName(propertyExpression));
         }
 
         public PropertiesSelector<T> WithSetters()
@@ -81,6 +96,33 @@ namespace Moq.AutoMock
             }
 
             return _checkFunctors.All(func => func(prop, instance));
+        }
+
+        private string GetPropertyName<TSource, TProperty>(
+            Expression<Func<TSource, TProperty>> propertyLambda)
+        {
+            Type type = typeof(TSource);
+
+            MemberExpression member = propertyLambda.Body as MemberExpression;
+            if (member == null)
+                throw new ArgumentException(string.Format(
+                    "Expression '{0}' refers to a method, not a property.",
+                    propertyLambda.ToString()));
+
+            PropertyInfo propInfo = member.Member as PropertyInfo;
+            if (propInfo == null)
+                throw new ArgumentException(string.Format(
+                    "Expression '{0}' refers to a field, not a property.",
+                    propertyLambda.ToString()));
+
+            if (type != propInfo.ReflectedType &&
+                !type.IsSubclassOf(propInfo.ReflectedType))
+                throw new ArgumentException(string.Format(
+                    "Expression '{0}' refers to a property that is not from type {1}.",
+                    propertyLambda.ToString(),
+                    type));
+
+            return propInfo.Name;
         }
     }
 }

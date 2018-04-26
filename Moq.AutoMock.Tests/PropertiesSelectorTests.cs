@@ -43,7 +43,7 @@ namespace Moq.AutoMock.Tests
         }
 
         [Test]
-        public void ShouldProperties_ByName()
+        public void ShouldProperties_WithPropertyNames()
         {
             var properties = GetProperties<ServiceWithProperties>(
                 BindingFlags.Instance | BindingFlags.Public,
@@ -51,6 +51,20 @@ namespace Moq.AutoMock.Tests
                 .WithPropertyNames(
                     nameof(ServiceWithProperties.GetSetProperty),
                     nameof(ServiceWithProperties.GetSetPropertyWithoutAttribute1)));
+
+            Assert.AreEqual(2, properties.Count());
+            Assert.AreEqual(1, properties.Count(p => p.Name == nameof(ServiceWithProperties.GetSetProperty)));
+            Assert.AreEqual(1, properties.Count(p => p.Name == nameof(ServiceWithProperties.GetSetPropertyWithoutAttribute1)));
+        }
+
+        [Test]
+        public void ShouldProperties_WithPropertyNameByExpression()
+        {
+            var properties = GetProperties<ServiceWithProperties>(
+                BindingFlags.Instance | BindingFlags.Public,
+                p => p
+                .WithPropertyName(ex => ex.GetSetProperty)
+                .WithPropertyName(ex => ex.GetSetPropertyWithoutAttribute1));
 
             Assert.AreEqual(2, properties.Count());
             Assert.AreEqual(1, properties.Count(p => p.Name == nameof(ServiceWithProperties.GetSetProperty)));
