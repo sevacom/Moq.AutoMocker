@@ -5,127 +5,79 @@ using System.Reflection;
 
 namespace Moq.AutoMock
 {
-    internal class PropertiesSelector
+    /// <summary>
+    /// Help to select and get properties by type T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed class PropertiesSelector<T> where T: class
     {
-        public PropertyInfo[] GetInjectableProperties(
-            Type targetType, 
-            BindingFlags bindingFlags, 
-            bool withSettersOnly, 
-            Type propertyAttributeType = null)
+        private static Func<PropertyInfo, T, bool> _withSettersFunc = (p, instance) => p.CanWrite;
+        private List<Func<PropertyInfo, T, bool>> _checkFunctors = new List<Func<PropertyInfo, T, bool>>();
+        private bool _isCheckWithValue = false;
+
+        private PropertiesSelector()
         {
-            IEnumerable<PropertyInfo> properties = targetType
-                .GetProperties(bindingFlags)
-                .Where(p => !p.PropertyType.IsValueType);
-
-            if(propertyAttributeType != null)
-            {
-                properties = properties.Where(p => p.IsDefined(propertyAttributeType, true));
-            }
-
-            if(withSettersOnly)
-            {
-                properties = properties.Where(p => p.CanWrite);
-            }
-
-            return properties.ToArray();
-        }
-    }
-
-    public sealed class PropertiesSelectorBuilder<T> where T : class
-    {
-        private static Func<PropertyInfo, object, bool> _withSettersFunc = (p, instance) => p.CanWrite;
-
-        private List<Func<PropertyInfo, object, bool>> _checkFunctors = new List<Func<PropertyInfo, object, bool>>();
-        private BindingFlags _bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-        private bool _withValueCheck = false;
-
-        public static PropertiesSelectorBuilder<T> Create()
-        {
-            return new PropertiesSelectorBuilder<T>();
         }
 
-        public static PropertiesSelectorBuilder<T> CreateDefault()
+        public static PropertiesSelector<T> Create()
         {
-            return Create()
-                .WithSetters()
-                .WithValue(null);
+            return new PropertiesSelector<T>();
         }
 
-        public static PropertiesSelectorBuilder<T> CreateDefaultWithAttribute<TAttribute>() where TAttribute : Attribute
+        public static IEnumerable<PropertyInfo> GetProperties(
+            BindingFlags bindingFlags,
+            Func<PropertyInfo, bool> isSetMockProperty)
         {
-            return CreateDefault()
-                .WithAttribute<TAttribute>();
+            var properties = typeof(T).GetProperties(bindingFlags)
+               .Where(p => !p.PropertyType.IsValueType)
+               .Where(p => isSetMockProperty(p));
+
+            return properties;
         }
 
-        private PropertiesSelectorBuilder()
-        {
-
-        }
-
-        public PropertiesSelectorBuilder<T> WithPropertyNames()
+        public PropertiesSelector<T> WithPropertyNames()
         {
             // TODO
             return this;
         }
 
-        public PropertiesSelectorBuilder<T> WithSetters()
+        public PropertiesSelector<T> WithSetters()
         {
             _checkFunctors.Add(_withSettersFunc);
             return this;
         }
 
-        public PropertiesSelectorBuilder<T> WithPrivate()
-        {
-            if(!_bindingFlags.HasFlag(BindingFlags.NonPublic))
-            {
-                _bindingFlags = _bindingFlags | BindingFlags.NonPublic;
-            }
-            
-            return this;
-        }
-
-        public PropertiesSelectorBuilder<T> WithAttribute<TAttribute>() where TAttribute: Attribute
+        public PropertiesSelector<T> WithAttribute<TAttribute>()
+            where TAttribute: Attribute
         {
             var attributeType = typeof(TAttribute);
-            _checkFunctors.Add(new Func<PropertyInfo, object, bool>(
-                (p, instance) => p.IsDefined(attributeType, true)));
+            _checkFunctors.Add((p, instance) => p.IsDefined(attributeType, true));
             return this;
         }
 
-        public PropertiesSelectorBuilder<T> WithValue(object propertyValue)
+        public PropertiesSelector<T> WithValue(object propertyValue)
         {
-            _withValueCheck = true;
-            var func = new Func<PropertyInfo, object, bool>(
-                (p, instance) => p.GetValue(instance) == propertyValue);
-            _checkFunctors.Add(func);
+            _isCheckWithValue = true;
+            _checkFunctors.Add((p, instance) => p.GetValue(instance) == propertyValue);
             return this;
         }
 
-        public PropertiesSelectorBuilder<T> WithCustom(Func<PropertyInfo, object, bool> customFunc)
+        public PropertiesSelector<T> WithCustom(Func<PropertyInfo, object, bool> customFunc)
         {
             _checkFunctors.Add(customFunc);
             return this;
         }
 
-        public IEnumerable<PropertyInfo> GetProperties(T instance = null)
-        {
-            if(instance == null && _withValueCheck)
-            {
-                throw new ArgumentException($"'{nameof(instance)}' should be not null, to check properties by value ('{nameof(WithValue)}')", nameof(instance));
-            }
-
-            var properties = typeof(T).GetProperties(_bindingFlags)
-                .Where(p => !p.PropertyType.IsValueType)
-                .Where(p => IsPropertyValid(p, instance));
-
-            return properties;
-        }
-
-        private bool IsPropertyValid(PropertyInfo prop, object instance)
+        public bool IsPropertyValid(PropertyInfo prop, T instance = null)
         {
             if (_checkFunctors.Count == 0)
             {
                 return true;
+            }
+
+            if (instance == null && _isCheckWithValue)
+            {
+                throw new ArgumentException($"'{nameof(instance)}' should be not null, to check properties by value ('{nameof(WithValue)}')", nameof(instance));
             }
 
             return _checkFunctors.All(func => func(prop, instance));

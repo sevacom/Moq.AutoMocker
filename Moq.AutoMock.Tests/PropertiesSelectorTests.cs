@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -8,22 +9,12 @@ namespace Moq.AutoMock.Tests
     [TestFixture]
     public class PropertiesSelectorTests
     {
-        private readonly PropertiesSelector _target = new PropertiesSelector();
-
         [Test]
         public void ShouldGetPublicProperties_WithAttribute_WithReferenceType()
         {
-            var properties = _target.GetInjectableProperties(
-                typeof(ServiceWithProperties),
-                 BindingFlags.Instance | BindingFlags.Public,
-                 false,
-                 typeof(ImportPropertyAttribute));
-
-            properties = PropertiesSelectorBuilder<ServiceWithProperties>
-                .Create()
-                .WithAttribute<ImportPropertyAttribute>()
-                .GetProperties()
-                .ToArray();
+            var properties = GetProperties<ServiceWithProperties>(
+                BindingFlags.Instance | BindingFlags.Public,
+                p => p.WithAttribute<ImportPropertyAttribute>());
 
             Assert.AreEqual(
                 ServiceWithProperties.PublicPropertiesWithImportAttributeAndRefereceTypeCount,
@@ -33,15 +24,8 @@ namespace Moq.AutoMock.Tests
         [Test]
         public void ShouldGetPublicProperties_WithReferenceType()
         {
-            var properties = _target.GetInjectableProperties(
-                typeof(ServiceWithProperties),
-                 BindingFlags.Instance | BindingFlags.Public,
-                 false);
-
-            properties = PropertiesSelectorBuilder<ServiceWithProperties>
-                .Create()
-                .GetProperties()
-                .ToArray();
+            var properties = GetProperties<ServiceWithProperties>(
+                BindingFlags.Instance | BindingFlags.Public);
 
             Assert.AreEqual(ServiceWithProperties.PublicRefereceTypePropertiesCount,
                 properties.Count());
@@ -50,19 +34,20 @@ namespace Moq.AutoMock.Tests
         [Test]
         public void ShouldGetPublicProperties_WithSettersOnly()
         {
-            var properties = _target.GetInjectableProperties(
-                typeof(ServiceWithProperties),
-                 BindingFlags.Instance | BindingFlags.Public,
-                 true);
-
-            properties = PropertiesSelectorBuilder<ServiceWithProperties>
-                .Create()
-                .WithSetters()
-                .GetProperties()
-                .ToArray();
+            var properties = GetProperties<ServiceWithProperties>(
+                BindingFlags.Instance | BindingFlags.Public,
+                p => p.WithSetters());
 
             Assert.AreEqual(ServiceWithProperties.PublicRefereceTypePropertiesWithSetterCount,
                 properties.Count());
+        }
+
+        private IEnumerable<PropertyInfo> GetProperties<T>(BindingFlags bindingFlags, Action<PropertiesSelector<T>> setupValidator = null)
+            where T : class
+        {
+            var validator = PropertiesSelector<T>.Create();
+            setupValidator?.Invoke(validator);
+            return PropertiesSelector<T>.GetProperties(bindingFlags, p => validator.IsPropertyValid(p));
         }
     }
 

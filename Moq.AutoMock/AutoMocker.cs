@@ -14,7 +14,6 @@ namespace Moq.AutoMock
     {
         private readonly Dictionary<Type, IInstance> typeMap = new Dictionary<Type, IInstance>();
         private readonly ConstructorSelector constructorSelector = new ConstructorSelector();
-        private readonly PropertiesSelector propertiesSelector = new PropertiesSelector();
         private readonly MockBehavior mockBehavior;
 
         public AutoMocker(MockBehavior mockBehavior)
@@ -41,23 +40,6 @@ namespace Moq.AutoMock
         }
 
         /// <summary>
-        /// Constructs an instance from known services. Any dependancies (constructor arguments and public properties with setters and null value)
-        /// are fulfilled by searching the container or, if not found, automatically generating
-        /// mocks.
-        /// </summary>
-        /// <typeparam name="T">A concrete type</typeparam>
-        /// <returns>An instance of T with all constructor arguments derived from services
-        /// setup in the container.</returns>
-        public T CreateInstanceWithMockProperties<T>()
-            where T : class
-        {
-            var instance = CreateInstance<T>(false);
-            MockProperties(instance);
-            return instance;
-        }
-
-
-        /// <summary>
         /// Constructs an instance from known services. Any dependancies (constructor arguments)
         /// are fulfilled by searching the container or, if not found, automatically generating
         /// mocks.
@@ -82,15 +64,31 @@ namespace Moq.AutoMock
         }
 
         /// <summary>
-        /// Set instance properties with mocks
+        /// Constructs an instance from known services. Any dependancies (constructor arguments and public properties with setters and null value)
+        /// are fulfilled by searching the container or, if not found, automatically generating
+        /// mocks.
+        /// </summary>
+        /// <typeparam name="T">A concrete type</typeparam>
+        /// <returns>An instance of T with all constructor arguments derived from services
+        /// setup in the container.</returns>
+        public T CreateInstanceAndMockProperties<T>()
+            where T : class
+        {
+            var instance = CreateInstance<T>(false);
+            MockProperties(instance);
+            return instance;
+        }
+
+        /// <summary>
+        /// Set instance properties with mocks by default: with setters and null values
         /// </summary>
         public void MockProperties<T>(T instance)
             where T : class
         {
-            var properties = PropertiesSelectorBuilder<T>
-                .CreateDefault()
-                .GetProperties(instance);
-            MockProperties(instance, properties);
+            MockProperties(instance,
+                p => p
+                .WithSetters()
+                .WithValue(null));
         }
 
         /// <summary>
@@ -100,26 +98,44 @@ namespace Moq.AutoMock
             where T : class
             where TPropertyAttribute : Attribute
         {
-            var properties = PropertiesSelectorBuilder<T>
-                .CreateDefaultWithAttribute<TPropertyAttribute>()
-                .GetProperties(instance);
-            MockProperties(instance, properties);
+            MockProperties(instance, 
+                p => p
+                .WithSetters()
+                .WithValue(null)
+                .WithAttribute<TPropertyAttribute>());
         }
 
         /// <summary>
         /// Set instance properties with mocks
         /// </summary>
-        public void MockProperties<T>(T instance, PropertiesSelectorBuilder<T> propertiesBuilder)
+        public void MockProperties<T>(
+            T instance,
+            Action<PropertiesSelector<T>> setupSelector,
+            bool enablePrivate = false)
             where T : class
         {
-            var properties = propertiesBuilder.GetProperties(instance);
-            MockProperties(instance, properties);
+            var validator = PropertiesSelector<T>.Create();
+            setupSelector(validator);
+            MockProperties(instance, p => validator.IsPropertyValid(p, instance), enablePrivate);
         }
 
         /// <summary>
         /// Set instance properties with mocks
         /// </summary>
-        public void MockProperties<T>(T instance, IEnumerable<PropertyInfo> properties)
+        public void MockProperties<T>(
+            T instance,
+            Func<PropertyInfo, bool> isSetMockProperty,
+            bool enablePrivate)
+            where T : class
+        {
+            var properties = PropertiesSelector<T>.GetProperties(
+                GetBindingFlags(enablePrivate),
+                isSetMockProperty);
+
+            MockProperties(instance, properties);
+        }
+
+        private void MockProperties<T>(T instance, IEnumerable<PropertyInfo> properties)
             where T : class
         {
             foreach (var injectProperty in properties)
