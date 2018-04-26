@@ -35,9 +35,9 @@ namespace Moq.AutoMock
             return properties;
         }
 
-        public PropertiesSelector<T> WithPropertyNames()
+        public PropertiesSelector<T> WithPropertyNames(params string[] propertyNames)
         {
-            // TODO
+            _checkFunctors.Add((p, instance) => propertyNames.Contains(p.Name));
             return this;
         }
 
@@ -62,7 +62,7 @@ namespace Moq.AutoMock
             return this;
         }
 
-        public PropertiesSelector<T> WithCustom(Func<PropertyInfo, object, bool> customFunc)
+        public PropertiesSelector<T> WithCustom(Func<PropertyInfo, T, bool> customFunc)
         {
             _checkFunctors.Add(customFunc);
             return this;
@@ -81,6 +81,6 @@ namespace Moq.AutoMock
             }
 
             return _checkFunctors.All(func => func(prop, instance));
-        }   
+        }
     }
 }
