@@ -12,9 +12,9 @@ namespace Moq.AutoMock
     /// <typeparam name="T"></typeparam>
     public sealed class PropertiesSelector<T> where T: class
     {
-        private static Func<PropertyInfo, T, bool> _withSettersFunc = (p, instance) => p.CanWrite;
-        private List<Func<PropertyInfo, T, bool>> _checkFunctors = new List<Func<PropertyInfo, T, bool>>();
-        private bool _isCheckWithValue = false;
+        private static readonly Func<PropertyInfo, T, bool> WithSettersFunc = (p, instance) => p.CanWrite;
+        private readonly List<Func<PropertyInfo, T, bool>> _checkFunctors = new List<Func<PropertyInfo, T, bool>>();
+        private bool _isAnyChecksWithValue;
         private List<string> _propertyNames;
 
         private PropertiesSelector()
@@ -32,7 +32,7 @@ namespace Moq.AutoMock
         {
             var properties = typeof(T).GetProperties(bindingFlags)
                .Where(p => !p.PropertyType.IsValueType)
-               .Where(p => isSetMockProperty(p));
+               .Where(isSetMockProperty);
 
             return properties;
         }
@@ -58,7 +58,7 @@ namespace Moq.AutoMock
 
         public PropertiesSelector<T> WithSetters()
         {
-            _checkFunctors.Add(_withSettersFunc);
+            _checkFunctors.Add(WithSettersFunc);
             return this;
         }
 
@@ -72,7 +72,7 @@ namespace Moq.AutoMock
 
         public PropertiesSelector<T> WithValue(object propertyValue)
         {
-            _isCheckWithValue = true;
+            _isAnyChecksWithValue = true;
             _checkFunctors.Add((p, instance) => p.GetValue(instance) == propertyValue);
             return this;
         }
@@ -90,7 +90,7 @@ namespace Moq.AutoMock
                 return true;
             }
 
-            if (instance == null && _isCheckWithValue)
+            if (instance == null && _isAnyChecksWithValue)
             {
                 throw new ArgumentException($"'{nameof(instance)}' should be not null, to check properties by value ('{nameof(WithValue)}')", nameof(instance));
             }
@@ -98,29 +98,27 @@ namespace Moq.AutoMock
             return _checkFunctors.All(func => func(prop, instance));
         }
 
-        private string GetPropertyName<TSource, TProperty>(
+        private static string GetPropertyName<TSource, TProperty>(
             Expression<Func<TSource, TProperty>> propertyLambda)
         {
-            Type type = typeof(TSource);
+            var type = typeof(TSource);
 
-            MemberExpression member = propertyLambda.Body as MemberExpression;
+            var member = propertyLambda.Body as MemberExpression;
             if (member == null)
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a method, not a property.",
-                    propertyLambda.ToString()));
+            {
+                throw new ArgumentException($"Expression '{propertyLambda}' refers to a method, not a property.");
+            }
 
-            PropertyInfo propInfo = member.Member as PropertyInfo;
+            var propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a field, not a property.",
-                    propertyLambda.ToString()));
+            {
+                throw new ArgumentException($"Expression '{propertyLambda}' refers to a field, not a property.");
+            }
 
-            if (type != propInfo.ReflectedType &&
-                !type.IsSubclassOf(propInfo.ReflectedType))
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a property that is not from type {1}.",
-                    propertyLambda.ToString(),
-                    type));
+            if (type != propInfo.ReflectedType && !type.IsSubclassOf(propInfo.ReflectedType))
+            {
+                throw new ArgumentException($"Expression '{propertyLambda}' refers to a property that is not from type {type}.");
+            }
 
             return propInfo.Name;
         }
