@@ -10,6 +10,6 @@ $propertiesArg = '/p:Configuration=Release'
 
 & $msBuildPath .\Moq.AutoMock.sln $propertiesArg
 
-.\.nuget\NuGet.exe pack ".\Moq.AutoMock\Moq.AutoMock.csproj" -Properties "Configuration=Release;Platform=AnyCPU" -Symbols -IncludeReferencedProjects -OutputDirectory build
+.\.nuget\NuGet.exe pack ".\Moq.AutoMock\Moq.AutoMock.csproj" -Version $args[0] -Properties "Configuration=Release;Platform=AnyCPU" -Symbols -IncludeReferencedProjects -OutputDirectory build
 
 
