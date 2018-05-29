@@ -6,9 +6,10 @@ $latestMsBuildKey = (
        
 $msBuildPath = $latestMsBuildKey.GetValue("MSBuildToolsPath") + "MSBuild.exe"
 
-$propertiesArg = '/p:OutputPath=' + $buildDir +';Configuration=Release'
+$propertiesArg = '/p:Configuration=Release'
 
 & $msBuildPath .\Moq.AutoMock.sln $propertiesArg
 
-.\.nuget\NuGet.exe pack .\Moq.Automock.nuspec -BasePath $buildDir -OutputDirectory build
+.\.nuget\NuGet.exe pack ".\Moq.AutoMock\Moq.AutoMock.csproj" -Properties "Configuration=Release;Platform=AnyCPU" -Symbols -IncludeReferencedProjects -OutputDirectory build
+
 
