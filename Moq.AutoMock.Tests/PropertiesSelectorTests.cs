@@ -76,7 +76,7 @@ namespace Moq.AutoMock.Tests
         {
             var validator = PropertiesSelector<T>.Create();
             setupValidator?.Invoke(validator);
-            return PropertiesSelector<T>.GetProperties(bindingFlags, p => validator.IsPropertyValid(p));
+            return PropertiesSelector<T>.GetProperties(bindingFlags, p => validator.IsPropertyApplicable(p));
         }
     }
 

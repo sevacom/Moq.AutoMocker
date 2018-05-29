@@ -52,10 +52,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoMocker.Combine.cs.generated.cs">
+    <Compile Include="AutoMocker.Combine.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>AutoMocker.Combine.cs.tt</DependentUpon>
+      <DependentUpon>AutoMocker.Combine.tt</DependentUpon>
     </Compile>
     <Compile Include="AutoMocker.cs" />
     <Compile Include="CastChecker.cs" />
@@ -67,9 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoMocker.Verify.cs" />
-    <None Include="AutoMocker.Combine.cs.tt">
+    <None Include="AutoMocker.Combine.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AutoMocker.Combine.cs.generated.cs</LastGenOutput>
+     <LastGenOutput>AutoMocker.Combine.cs</LastGenOutput>
     </None>
     <None Include="Moq.AutoMock.nuspec" />
     <None Include="packages.config">

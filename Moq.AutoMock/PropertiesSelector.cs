@@ -10,7 +10,8 @@ namespace Moq.AutoMock
     /// Help to select and get properties by type T
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed class PropertiesSelector<T> where T: class
+    public sealed class PropertiesSelector<T>
+        where T : class
     {
         private static readonly Func<PropertyInfo, T, bool> WithSettersFunc = (p, instance) => p.CanWrite;
         private readonly List<Func<PropertyInfo, T, bool>> _checkFunctors = new List<Func<PropertyInfo, T, bool>>();
@@ -39,7 +40,7 @@ namespace Moq.AutoMock
 
         public PropertiesSelector<T> WithPropertyNames(params string[] propertyNames)
         {
-            if(_propertyNames == null)
+            if (_propertyNames == null)
             {
                 _propertyNames = new List<string>();
                 _checkFunctors.Add((p, instance) => _propertyNames.Contains(p.Name));
@@ -63,7 +64,7 @@ namespace Moq.AutoMock
         }
 
         public PropertiesSelector<T> WithAttribute<TAttribute>()
-            where TAttribute: Attribute
+            where TAttribute : Attribute
         {
             var attributeType = typeof(TAttribute);
             _checkFunctors.Add((p, instance) => p.IsDefined(attributeType, true));
@@ -83,7 +84,7 @@ namespace Moq.AutoMock
             return this;
         }
 
-        public bool IsPropertyValid(PropertyInfo prop, T instance = null)
+        public bool IsPropertyApplicable(PropertyInfo prop, T instance = null)
         {
             if (_checkFunctors.Count == 0)
             {

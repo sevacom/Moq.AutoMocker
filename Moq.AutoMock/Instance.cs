@@ -4,13 +4,14 @@ using System.Linq;
 
 namespace Moq.AutoMock
 {
-    interface IInstance
+    internal interface IInstance
     {
         object Value { get; }
+
         bool IsMock { get; }
     }
 
-    class MockArrayInstance : IInstance
+    internal class MockArrayInstance : IInstance
     {
         private readonly Type type;
         private readonly List<IInstance> mocks;
@@ -21,24 +22,30 @@ namespace Moq.AutoMock
             mocks = new List<IInstance>();
         }
 
-        public IEnumerable<IInstance> Mocks
-        {
-            get { return mocks; }
-        }
+        public IEnumerable<IInstance> Mocks => mocks;
 
         public object Value
         {
             get
             {
                 int i = 0;
-                Array array = Array.CreateInstance(type,mocks.Count);
+                Array array = Array.CreateInstance(type, mocks.Count);
                 foreach (IInstance instance in mocks)
-                    array.SetValue(instance.Value, i++); 
+                {
+                    array.SetValue(instance.Value, i++);
+                }
+
                 return array;
             }
         }
 
-        public bool IsMock { get { return mocks.Any(m => m.IsMock); } }
+        public bool IsMock
+        {
+            get
+            {
+                return mocks.Any(m => m.IsMock);
+            }
+        }
 
         public void Add(IInstance instance)
         {
@@ -46,7 +53,9 @@ namespace Moq.AutoMock
         }
     }
 
-    class MockInstance : IInstance
+#pragma warning disable SA1402 // File may only contain a single class
+    internal class MockInstance : IInstance
+#pragma warning restore SA1402 // File may only contain a single class
     {
         public MockInstance(Mock value)
         {
@@ -54,35 +63,35 @@ namespace Moq.AutoMock
         }
 
         public MockInstance(Type mockType, MockBehavior mockBehavior)
-            :this(CreateMockOf(mockType, mockBehavior))
+            : this(CreateMockOf(mockType, mockBehavior))
         {
         }
 
         private static Mock CreateMockOf(Type type, MockBehavior mockBehavior)
         {
-            var mockType = typeof (Mock<>).MakeGenericType(type);
-            var mock = (Mock) Activator.CreateInstance(mockType, mockBehavior);
+            var mockType = typeof(Mock<>).MakeGenericType(type);
+            var mock = (Mock)Activator.CreateInstance(mockType, mockBehavior);
             return mock;
         }
 
-        public object Value
-        {
-            get { return Mock.Object; }
-        }
+        public object Value => Mock.Object;
 
-        public Mock Mock { get; private set; }
+        public Mock Mock { get; }
 
-        public bool IsMock { get { return true; } }
+        public bool IsMock => true;
     }
 
-    class RealInstance : IInstance
+#pragma warning disable SA1402 // File may only contain a single class
+    internal class RealInstance : IInstance
+#pragma warning restore SA1402 // File may only contain a single class
     {
         public RealInstance(object value)
         {
             Value = value;
         }
 
-        public object Value { get; private set; }
-        public bool IsMock { get { return false; } }
+        public object Value { get; }
+
+        public bool IsMock => false;
     }
 }

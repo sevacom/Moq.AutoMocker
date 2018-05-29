@@ -234,7 +234,8 @@ namespace Moq.AutoMock.Tests
             [Test]
             public void It_creates_object_with_properties()
             {
-                ServiceWithProperties instance = mocker.CreateInstanceAndMockProperties<ServiceWithProperties>();
+                ServiceWithProperties instance = mocker.CreateInstance<ServiceWithProperties>();
+                mocker.MockProperties(instance);
 
                 Assert.IsNotNull(instance.GetSetProperty);
                 Assert.IsNotNull(instance.GetSetClassProperty);
@@ -548,7 +549,7 @@ namespace Moq.AutoMock.Tests
             [Test]
             public void Self_mocks_are_useful_for_testing_most_of_class()
             {
-                var selfMock = mocker.CreateSelfMock<InsecureAboutSelf>();
+                var selfMock = mocker.CreateMockObject<InsecureAboutSelf>();
                 selfMock.TellJoke();
                 Assert.False(selfMock.SelfDepricated);
             }
@@ -556,7 +557,7 @@ namespace Moq.AutoMock.Tests
             [Test]
             public void It_can_self_mock_objects_with_constructor_arguments()
             {
-                var selfMock = mocker.CreateSelfMock<WithService>();
+                var selfMock = mocker.CreateMockObject<WithService>();
                 Assert.NotNull(selfMock.Service);
                 Assert.NotNull(Mock.Get(selfMock.Service));
             }

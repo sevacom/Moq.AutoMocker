@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace Moq.AutoMock
 {
@@ -12,11 +12,7 @@ namespace Moq.AutoMock
         public static Exception PreserveStackTrace(this Exception ex)
         {
             // If switching to .NET4.5+, the following line is a better method to use.
-            // ExceptionDispatchInfo.Capture(ex).Throw();
-
-            typeof(Exception).GetMethod("PrepForRemoting",
-                BindingFlags.NonPublic | BindingFlags.Instance)
-                .Invoke(ex, new object[0]);
+            ExceptionDispatchInfo.Capture(ex).Throw();
             return ex;
         }
     }
