@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Moq.AutoMock</RootNamespace>
-    <AssemblyName>Moq.AutoMock</AssemblyName>
+    <AssemblyName>Moq.AutoMocker</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\automock\</SolutionDir>
@@ -25,7 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\Moq.AutoMock.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Moq.AutoMocker.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\Moq.AutoMock.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Moq.AutoMocker.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
