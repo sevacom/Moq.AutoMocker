@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/xc6uyf485mea67v5/branch/master?svg=true)](https://ci.appveyor.com/project/sevacom/moq-automocker/branch/develop-netframework)
+[![Build status](https://ci.appveyor.com/api/projects/status/xc6uyf485mea67v5/branch/develop-netframework?svg=true)](https://ci.appveyor.com/project/sevacom/moq-automocker/branch/develop-netframework)
 
 An automocking container for Moq. Use this if you're invested in your IoC
 container and want to decouple your unit tests from changes to their 
