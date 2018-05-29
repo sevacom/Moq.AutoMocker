@@ -2,24 +2,20 @@
 <package>
   <metadata>
     <id>Moq.AutoMock</id>
-    <version>0.4.1.0</version>
-    <authors>Tim Kellogg</authors>
-    <owners>Tim Kellogg</owners>
-    <licenseUrl>https://github.com/tkellogg/Moq.AutoMocker/blob/master/License.md</licenseUrl>
-    <projectUrl>https://github.com/tkellogg/Moq.AutoMocker</projectUrl>
+    <version>1.0.0</version>
+    <authors>Tim Kellogg, sevacom</authors>
+    <licenseUrl>https://github.com/sevacom/Moq.AutoMocker/blob/master/License.md</licenseUrl>
+    <projectUrl>https://github.com/sevacom/Moq.AutoMocker</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>
-		An auto-mocking container that generates mocks using Moq
-		</description>
-    <copyright>Copyright Tim Kellogg 2015</copyright>
-		<tags>moq automocking testing TDD</tags>
+    <description>An auto-mocking container that generates mocks using Moq</description>
+    <tags>moq automocking testing TDD</tags>
     <dependencies>
       <dependency id="Moq" version="4.0" />
     </dependencies>
   </metadata>
   <files>
-    <file src="Moq.AutoMock.dll" target="lib\net45" />
-    <file src="Moq.AutoMock.pdb" target="lib\net45" />
-    <file src="Moq.AutoMock.XML" target="lib\net45" />
+    <file src="bin\$configuration$\Moq.AutoMock.dll" target="lib\net45" />
+    <file src="bin\$configuration$\Moq.AutoMock.pdb" target="lib\net45" />
+    <file src="bin\$configuration$\Moq.AutoMock.XML" target="lib\net45" />
   </files>
 </package>
