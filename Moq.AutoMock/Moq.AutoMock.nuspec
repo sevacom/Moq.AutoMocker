@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>Moq.AutoMock</id>
-    <version>1.0.0</version>
+    <id>$id$</id>
+    <title>$title$</title>
+    <version>$version$</version>
     <authors>Tim Kellogg, sevacom</authors>
     <licenseUrl>https://github.com/sevacom/Moq.AutoMocker/blob/master/License.md</licenseUrl>
     <projectUrl>https://github.com/sevacom/Moq.AutoMocker</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>An auto-mocking container that generates mocks using Moq</description>
+    <description>$description$</description>
     <tags>moq automocking testing TDD</tags>
     <dependencies>
       <dependency id="Moq" version="4.0" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\Moq.AutoMock.dll" target="lib\net45" />
-    <file src="bin\$configuration$\Moq.AutoMock.pdb" target="lib\net45" />
-    <file src="bin\$configuration$\Moq.AutoMock.XML" target="lib\net45" />
+    <file src="bin\$configuration$\$id$.dll" target="lib\net45" />
+    <file src="bin\$configuration$\$id$.pdb" target="lib\net45" />
+    <file src="bin\$configuration$\$id$.XML" target="lib\net45" />
   </files>
 </package>
