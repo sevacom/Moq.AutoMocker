@@ -7,6 +7,7 @@ namespace Moq.AutoMock
 {
     public static class CastChecker
     {
+        /// <summary>
         /// We are expecting expression to be m => m.Setup(setup). We will assume this structure
         /// and check if the inner setup is Converted (casted) to Object
         /// </summary>
